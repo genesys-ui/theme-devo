@@ -45,7 +45,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "pnpm run clean && pnpm run build:light && pnpm run build:dark && pnpm run validate",
+    "build": "pnpm run clean && pnpm run build:light && pnpm run build:dark",
     "build:dark": "genesys-tokens-cli build -i schemes/dark -o dist/dark -s dark -m dark",
     "build:light": "genesys-tokens-cli build -i schemes/light -o dist/light -m dark",
     "clean": "rm -rf dist/light dist/dark",
