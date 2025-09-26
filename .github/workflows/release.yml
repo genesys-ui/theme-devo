@@ -20,39 +20,16 @@ on:
 
 run-name: release ${{ github.event.inputs.version }}${{ github.event.inputs.dry == 'true' && ' (--dry-run)' || '' }}
 
-env:
-  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
-  GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
-        uses: ./.github/workflows/setup-node
-
-      - name: Dist
-        run: npm run dist
-
-  release:
+    uses: genesys-ui/gh-workflows/.github/workflows/build.yml@main
+  test:
+    uses: genesys-ui/gh-workflows/.github/workflows/test.yml@main
     needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
-        uses: ./.github/workflows/setup-node
-
-      - name: Setup Git config
-        run: |
-          git config --global user.name 'Devo GitHub Action'
-          git config --global user.email 'desa@devo.com'
-
-      - name: Publish ${{ github.event.inputs.version }}${{ github.event.inputs.dry == 'true' && ' (--dry-run)' || '' }}
-        run: npm run release:ci -- ${{ github.event.inputs.version != 'auto' && github.event.inputs.version || '' }}${{ github.event.inputs.dry == 'true' && ' --dry-run' || '' }}
+  release:
+    uses: genesys-ui/gh-workflows/.github/workflows/release.yml@main
+    needs: [test]
+    with:
+      version: ${{ github.event.inputs.version }}
+      dry: ${{ github.event.inputs.dry == 'true' }}
+    secrets: inherit

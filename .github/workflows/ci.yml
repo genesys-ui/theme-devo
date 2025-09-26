@@ -1,9 +1,9 @@
 name: ci
 on:
   push:
-    branches: ["master"]
+    branches: ['main']
   pull_request:
-    branches: ["master"]
+    branches: ['main']
   workflow_dispatch:
 
 permissions:
@@ -12,39 +12,15 @@ permissions:
   pages: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: true
+  group: 'pages'
+  cancel-in-progress: false
 
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
-        uses: ./.github/workflows/setup-node
-
-      - name: Dist
-        run: npm run dist
-
-  deploy:
+    uses: genesys-ui/gh-workflows/.github/workflows/build.yml@main
+  test:
+    uses: genesys-ui/gh-workflows/.github/workflows/test.yml@main
     needs: [build]
-    if: github.ref == 'refs/heads/master'
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout 🛎️
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js ⚙️ - Cache dependencies ⚡ - Install dependencies 🔧
-        uses: ./.github/workflows/setup-node
-
-      - uses: actions/configure-pages@v5
-
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: "./dist"
-      - uses: actions/deploy-pages@v4
+  deploy:
+    uses: genesys-ui/gh-workflows/.github/workflows/deploy.yml@main
+    needs: [test]
