@@ -53,7 +53,8 @@
     "release:ci": "release-it --ci",
     "test": "pnpm run validate:light && pnpm run validate:dark",
     "validate:dark": "genesys-tokens-cli validate dist/dark/",
-    "validate:light": "genesys-tokens-cli validate dist/light/"
+    "validate:light": "genesys-tokens-cli validate dist/light/",
+    "deploy": "cp -r dist public"
   },
   "devDependencies": {
     "@devoinc/genesys-tokens-cli": "^7.19.0",
